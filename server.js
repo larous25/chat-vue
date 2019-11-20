@@ -1,11 +1,9 @@
 'use strict'
 
-const http = require('http')
 const io = require('socket.io')
 
 const express = require('express')
 const app = express()
-const server = http.createServer(app)
 const port = 5000
 
 const bodyParser = require('body-parser')
@@ -13,7 +11,7 @@ const cors = require('cors')
 const history = require('connect-history-api-fallback')
 
 app.use(bodyParser)
-app.use(cors)
+app.use(cors())
 
 // Middleware for serving '/dist' directory
 const staticFileMiddleware = express.static('./client/dist')
@@ -29,7 +27,7 @@ app.use(history({
 // 2nd call for redirected requests
 app.use(staticFileMiddleware)
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
 /* mini-logger */
 server
@@ -46,7 +44,7 @@ server
   })
 
 /* sockets */
-var serverIo = io.listen(server)
+var serverIo = io.listen(server, { origins: '*:*' })
 
 const socketsNsp = serverIo.of('chat')
 socketsNsp.on('connection', (socket) => {
