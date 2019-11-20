@@ -1,10 +1,10 @@
 <template>
   <div class="hello">
-    <form>
+
       <label for="login">Por favor escriba su nombre de usuario</label>
       <input type="text" id="login" class="fadeIn second" name="login" placeholder="login" v-model="usuario">
       <button class="btn btn-sm" @click="ingresar">Ingresar</button>
-    </form>
+
   </div>
 </template>
 
