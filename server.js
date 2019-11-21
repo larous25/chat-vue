@@ -9,23 +9,47 @@ const port = 5000
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const history = require('connect-history-api-fallback')
+var serveStatic = require('serve-static');
 
-app.use(bodyParser)
+const { resolve } = require('path')
+
+app.use(bodyParser.json({ limit: '1mb' }))
 app.use(cors())
 
 // Middleware for serving '/dist' directory
-const staticFileMiddleware = express.static('./client/dist')
+
+const publicPath = resolve(__dirname, './client/dist/')
+const staticConf = { maxAge: '1y', etag: false }
+
+const staticFileMiddleware = express.static(publicPath, staticConf)
 
 // 1st call for unredirected requests
 app.use(staticFileMiddleware)
 
 // Support history api
-app.use(history({
-  index: '/dist/index.html'
+app.use('/', history({
+  index: resolve(__dirname, './client/dist/index.html')
 }))
+// app.use(serveStatic(resolve(__dirname, './client/dist')))
 
-// 2nd call for redirected requests
-app.use(staticFileMiddleware)
+app.use(function errorHandler (err, req, res, next) {
+  console.error('este es de la aplicacion Express', err)
+  res.status(err.statusCode || 400).json({
+    message: err.message
+  })
+})
+
+// si no encuentra la url 404
+app.use(function (req, res) {
+  res.status(404)
+  let msn = 'Not found'
+
+  if (req.accepts('json')) {
+    return res.json({ 'error': msn })
+  }
+
+  res.send(msn)
+})
 
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
@@ -35,6 +59,7 @@ server
     console.log('-----------------------')
     console.log('server is running')
     console.log('-----------------------')
+    console.log(`http://localhost:${port}`)
   })
   .on('connnection', (req, res) => {
     console.log('new connection')
@@ -69,3 +94,14 @@ socketsNsp.on('connection', (socket) => {
     socket.to(data.room).broadcast.emit('message', data.message)
   })
 })
+
+// por si todo falla
+process
+  .on('uncaughtException', err => {
+    console.error('fatal error en:  ', err)
+    process.exit(1)
+  })
+  .on('unhandledRejection', (err, p) => {
+    console.error(`a ocurrido en la funcion ${p} el siguiente error: `, err.message)
+    process.exit(1)
+  })
