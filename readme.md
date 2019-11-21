@@ -1,5 +1,5 @@
 
 Pasos de instalación:  
-- npm install
+- dar `npm install` 
 - ingresar a client dar `npm install` y `npm run build`  
-- luego `node server.js`
+- finalmente `node server.js`

@@ -1,17 +1,20 @@
 <template>
     <div class="allrooms">
-        <span class="msg active">{{main}}</span>
+        <span class="msg active">{{main.name}}</span>
         <hr>
+        <div v-for="(item, index) in rooms" :key="index" @click="changeRoom(item)">
+          {{ item.name }}
+        </div>
     </div>
 </template>
 
 <script>
 export default {
   name: 'room',
-  props: ['main'],
+  props: ['main', 'rooms'],
   methods: {
-    changeRoom: function () {
-
+    changeRoom (item) {
+      this.$emit('change', item)
     }
   }
 }
