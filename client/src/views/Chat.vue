@@ -1,15 +1,25 @@
 <template>
-  <div>
-    <router-link to="/">Back</router-link>
-    <div class="rooms">
-      <Messages :messages="mainRoom.messages" />
-      <input type="text" name="newOne" placeholder="Nueva Sala" v-model="newOne">
-      <button id="room" @click="newRoom(newOne)">Crear sala</button>
-      <Rooms :main="mainRoom" :rooms="rooms" @change="change"/>
+  <b-container fluid>
+    <b-row>
+       <router-link to="/">Back</router-link>
+    </b-row>
+    <b-row>
+      <b-col col lg="8">
+        <Messages :messages="mainRoom.messages" />
+      </b-col>
+      <b-col col lg="3">
+        <b-form-input id="login" name="login" v-model="newOne" placeholder="Nueva Sala">
+        </b-form-input>
+        <div class="mt-2">
+          <b-button squared id="room" @click="newRoom(newOne)">
+            Crear sala
+          </b-button>
+        </div>
+        <Rooms :main="mainRoom" :rooms="rooms" @change="change"/>
+      </b-col>
       <NewMessage @newNessage="send" />
-    </div>
-
-  </div>
+    </b-row>
+  </b-container>
 </template>
 <script>
 import Messages from '@/components/Messages.vue'
@@ -61,10 +71,7 @@ export default {
 
 function Room () {
   this.name = ''
-  this.messages = [{
-    text: 'eee',
-    id: 0
-  }]
+  this.messages = []
 }
 Room.prototype.setName = function (name) {
   this.name = name

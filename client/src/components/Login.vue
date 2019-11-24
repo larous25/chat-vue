@@ -1,9 +1,11 @@
 <template>
   <div class="hello">
-
-      <label for="login">Por favor escriba su nombre de usuario</label>
-      <input type="text" id="login" class="fadeIn second" name="login" placeholder="login" v-model="usuario">
-      <button class="btn btn-sm" @click="ingresar">Ingresar</button>
+    <b-input-group prepend="Ingreso" class="mt-3">
+      <b-form-input id="login" name="login" v-model="usuario" placeholder="Pon tu alias"></b-form-input>
+      <b-input-group-append>
+        <b-button variant="outline-primary" @click="ingresar">Ingresar</b-button>
+      </b-input-group-append>
+    </b-input-group>
 
   </div>
 </template>

@@ -3,9 +3,14 @@ import App from './App.vue'
 import router from './router'
 import socketio from 'socket.io-client'
 import VueSocketIo from 'vue-socket.io'
+import BootstrapVue from 'bootstrap-vue'
+
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 const connection = socketio('http://localhost:5000')
 
+Vue.use(BootstrapVue)
 Vue.use(new VueSocketIo({
   connection,
   debug: true
