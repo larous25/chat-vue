@@ -1,10 +1,13 @@
 <template>
     <div class="allrooms">
-        <span class="msg active">{{main.name}}</span>
+        <span class="msg active">Actual: {{main.name}}</span>
         <hr>
-        <div v-for="(item, index) in rooms" :key="index" @click="changeRoom(item)">
+        <span>Salas: </span>
+        <b-list-group>
+        <b-list-group-item v-for="(item, index) in rooms" :key="index" @click="changeRoom(item)">
           {{ item.name }}
-        </div>
+        </b-list-group-item>
+        </b-list-group>
     </div>
 </template>
 

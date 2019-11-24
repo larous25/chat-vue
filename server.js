@@ -9,7 +9,6 @@ const port = 5000
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const history = require('connect-history-api-fallback')
-var serveStatic = require('serve-static');
 
 const { resolve } = require('path')
 
@@ -30,7 +29,6 @@ app.use(staticFileMiddleware)
 app.use('/', history({
   index: resolve(__dirname, './client/dist/index.html')
 }))
-// app.use(serveStatic(resolve(__dirname, './client/dist')))
 
 app.use(function errorHandler (err, req, res, next) {
   console.error('este es de la aplicacion Express', err)
@@ -42,10 +40,10 @@ app.use(function errorHandler (err, req, res, next) {
 // si no encuentra la url 404
 app.use(function (req, res) {
   res.status(404)
-  let msn = 'Not found'
+  const msn = 'Not found'
 
   if (req.accepts('json')) {
-    return res.json({ 'error': msn })
+    return res.json({ error: msn })
   }
 
   res.send(msn)
