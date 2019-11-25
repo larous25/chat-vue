@@ -8,7 +8,7 @@
         <Messages :messages="mainRoom.messages" />
       </b-col>
       <b-col col lg="3">
-        <b-form-input id="login" name="login" v-model="newOne" placeholder="Nueva Sala">
+        <b-form-input id="login" name="login" v-model="newOne" :state="newOne.length !== 0 " placeholder="Nueva Sala">
         </b-form-input>
         <div class="mt-2">
           <b-button squared id="room" @click="newRoom(newOne)">
@@ -17,7 +17,7 @@
         </div>
         <Rooms :main="mainRoom" :rooms="rooms" @change="change"/>
       </b-col>
-      <NewMessage @newNessage="send" />
+      <NewMessage :user="$route.params.user" @newNessage="send" />
     </b-row>
   </b-container>
 </template>
@@ -62,6 +62,9 @@ export default {
       this.mainRoom = room
     },
     newRoom (newroom) {
+      if (newroom.length === 0) {
+        return
+      }
       let r = new Room()
       r.setName(newroom)
       this.rooms.push(r)
