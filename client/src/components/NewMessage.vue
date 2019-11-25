@@ -14,6 +14,7 @@
 <script>
 export default {
   name: 'newmessage',
+  props: ['user'],
   data () {
     return {
       text: ''
@@ -21,13 +22,15 @@ export default {
   },
   methods: {
     send () {
-      this.$emit('newNessage', new Message(this.text))
+      const nMsg = new Message(this.text, this.user)
+      this.text = ''
+      this.$emit('newNessage', nMsg)
     }
   }
 }
 let i = 0
-function Message (msn) {
-  this.user = 'user'
+function Message (msn, user) {
+  this.user = user || 'user'
   this.text = msn
   i++
   this.id = i
