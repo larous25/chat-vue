@@ -2,7 +2,7 @@
   <b-container style="margin-top:10px">
     <b-row>
       <b-col sm="10">
-        <b-form-textarea id="new-message" name="new-message" rows="5" cols="40" :state="text.length >= 10" placeholder="¡Escribe algo nuevo!" v-model="text">
+        <b-form-textarea id="new-message" name="new-message" rows="5" cols="40" :state="text.length >= 1" placeholder="¡Escribe algo nuevo!" v-model="text">
         </b-form-textarea>
       </b-col>
       <b-col sm="2">
@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     send () {
-      if (this.text.length <= 10) {
+      if (this.text.length <= 1) {
         return
       }
       console.log(this.user)
