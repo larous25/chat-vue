@@ -1,6 +1,6 @@
 <template>
     <div  class="main-messages">
-        <b-media v-for="message in messages" :key="message.id" right-align vertical-align="center" style="margin-top:10px">
+        <b-media v-for="message in messages" :key="message.id" class="message">
             <h6 class="mt-0 mb-1"> <strong>{{message.user}}</strong>:</h6>
             <p class="mb-0">
                 {{ message.text }}
@@ -15,5 +15,15 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+.main-messages {
+    height: 100%;
+    width: 100%;
+    background-color: whitesmoke;
+    padding: 10px;
+}
+.message {
+    margin-bottom: 10px;
+    background: white;
+}
 </style>
