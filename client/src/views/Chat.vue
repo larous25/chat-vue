@@ -83,7 +83,10 @@ export default {
       if (newroom.length === 0) {
         return
       }
-      this.$socket.emit('newroom', newroom)
+      this.$socket.emit('newrooms', newroom)
+      const nR = new Room()
+      nR.setName(newroom)
+      this.rooms.push(nR)
     }
   }
 }
