@@ -49,7 +49,9 @@ app.use(function (req, res) {
   res.send(msn)
 })
 
-const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.set('port', port)
+
+const server = require('http').createServer(app).listen(port)
 
 /* mini-logger */
 server
@@ -67,31 +69,8 @@ server
   })
 
 /* sockets */
-var serverIo = io.listen(server, { origins: '*:*' })
-
-const socketsNsp = serverIo.of('chat')
-socketsNsp.on('connection', (socket) => {
-  socket.join('default')
-
-  socket.on('newroom', (data) => {
-    socket.broadcast.emit('newroom', data.newRoom)
-    // socketsNsp.emit('newroom', data.newRoom);
-  })
-
-  socket.on('changeRoom', (data) => {
-    socket.leave(data.before)
-    socket.join(data.room)
-
-    socket.to(data.room).broadcast.emit('message', {
-      msg: `Wellcome ${socket.id.replace('/chat#', '')}`
-    })
-  })
-
-  socket.on('message', (data) => {
-    console.log('message', data)
-    socket.to(data.room).broadcast.emit('message', data.message)
-  })
-})
+const serverIo = io.listen(server, { origins: '*:*' })
+require('./sockets')(serverIo)
 
 // por si todo falla
 process

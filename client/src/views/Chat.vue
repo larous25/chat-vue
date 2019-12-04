@@ -15,9 +15,9 @@
             Crear sala
           </b-button>
         </div>
-        <Rooms :main="mainRoom" :rooms="rooms" @change="change"/>
+        <Rooms :main="mainRoom" :rooms="rooms" @change="changeRoom"/>
       </b-col>
-      <NewMessage :user="$route.params.user" @newNessage="send" />
+      <NewMessage :user="$route.params.user" @newNessage="sendMessage" />
     </b-row>
   </b-container>
 </template>
@@ -25,19 +25,17 @@
 import Messages from '@/components/Messages.vue'
 import NewMessage from '@/components/NewMessage.vue'
 import Rooms from '@/components/Rooms.vue'
-// $route.params.user
+import Room from '@/helpers/Room'
+
 export default {
   name: 'chat',
+  beforeCreate () {
+    this.$socket.emit('setMyName', this.$route.params.user)
+  },
   data: function () {
-    let one = new Room()
-    one.setName('one')
-    let two = new Room()
-    two.setName('two')
-    let mainRoom = new Room()
-    mainRoom.setName('default')
     return {
-      rooms: [one, two],
-      mainRoom,
+      rooms: [],
+      mainRoom: {},
       newOne: ''
     }
   },
@@ -47,36 +45,46 @@ export default {
     Rooms
   },
   sockets: {
-    newroom (newroom) {
-
+    setMain (room) {
+      const r = new Room()
+      r.setName(room)
+      this.mainRoom = r
+      this.rooms.push(r)
     },
-    message (data) {
-
+    newrooms (rooms) {
+      rooms = rooms.map(r => {
+        const nR = new Room()
+        nR.setName(r)
+        return nR
+      })
+      this.rooms.push(...rooms)
+    },
+    newmessage ([m, rn]) {
+      this.rooms.forEach(r => {
+        // aqui debe estar el alias y no el nombre
+        if (r.getName() === rn) {
+          r.messages.push(m)
+        }
+      })
+    },
+    message (ns) {
     }
   },
   methods: {
-    send (message) {
+    sendMessage (message) {
+      this.$socket.emit('newmessage', message)
       this.mainRoom.messages.push(message)
     },
-    change (room) {
+    changeRoom (room) {
+      this.$socket.emit('changeRoom', room.getName())
       this.mainRoom = room
     },
     newRoom (newroom) {
       if (newroom.length === 0) {
         return
       }
-      let r = new Room()
-      r.setName(newroom)
-      this.rooms.push(r)
+      this.$socket.emit('newroom', newroom)
     }
   }
-}
-
-function Room () {
-  this.name = ''
-  this.messages = []
-}
-Room.prototype.setName = function (name) {
-  this.name = name
 }
 </script>
