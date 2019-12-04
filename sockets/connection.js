@@ -8,7 +8,7 @@ module.exports = nsp => {
     // say my name
     // esto es lo basico
     skClient.on('setMyName', name => {
-      skClient.myName = name
+      skClient.myNick = name
       skClient.leave(skClient.id)
       skClient.join(name)
       skClient.join(dRoom)
@@ -22,7 +22,7 @@ module.exports = nsp => {
 
         const clientsNames = clients
           .filter(c => c !== skClient.id)
-          .map(c => nsp.connected[c].myName)
+          .map(c => nsp.connected[c].myNick)
         skClient.emit(eventNRooms, clientsNames)
       })
     })
@@ -30,11 +30,13 @@ module.exports = nsp => {
     // evento del cuarto nuevo
     skClient.on(eventNRooms, data => {
       skClient.join(data)
-      skClient.emit(eventNRooms, [data])
+      skClient.broadcast.emit(eventNRooms, [data])
     })
 
     // evento del mensaje
     skClient.on(newMsg, data => {
+      console.log('\n al cuarto al que envia: ', skClient.mainRoom)
+      console.log(' y el alias con el que se: ', skClient.aliasRoom)
       skClient
         .to(skClient.mainRoom)
         .broadcast
@@ -48,42 +50,40 @@ module.exports = nsp => {
      * y finalmente unir al cuarto al usuario al que se le enviara el mensaje
      * si existe simplemente unirse a el y recuperar los mensajes
     */
-    skClient.on('changeRoom', data => {
-      if (data === dRoom) {
-        skClient.mainRoom = data
-        skClient.aliasRoom = data
-        return
-      }
+    skClient.on('changeRoom', room => {
+      nsp.in(dRoom).clients(function joinClient (error, clients) {
+        if (error) { throw error }
 
-      // creamos el cuarto, una combinacion de ambos cuartos
-      // para que sea un chat privado
-      const newRoom = [skClient.myName, data]
-        .sort((a, b) => {
-          return a.localeCompare(b)
-        })
-        .map(r => r.substring(0, 4))
-        .join('-')
+        // buscamos al compañero para saber si es un chat
+        // privado o de grupo
+        const idPartner = clients.find(c => nsp.connected[c].myNick === room)
+        let roomToChange = ''
+        if (!idPartner) { // aqui es de grupo
+          roomToChange = room
+          skClient.aliasRoom = room
 
-      // si no existe el cuarto
-      if (!Object.keys(skClient.rooms).some(r => r === newRoom)) {
-        console.log('nombre del cuarto nuevo: ', newRoom)
-        // buscamos el cliente para unirlo al cuarto
-        nsp.in(dRoom).clients(function joinClient (error, clients) {
-          if (error) { throw error }
-
-          for (const c of clients) {
-            if (c === skClient.id) { continue }
-            if (nsp.connected[c].myName === data) {
-              nsp.connected[c].join(newRoom)
-              skClient.join(newRoom)
-              break
-            }
+          if (!Object.keys(skClient.rooms).some(r => r === room)) {
+            skClient.join(room)
           }
-        })
-      }
+        } else {
+          // para que sea un chat privado
+          // creamos el cuarto, una combinacion de ambos nicks
+          const newRoom = [skClient.myNick, room]
+            .sort((a, b) => a.localeCompare(b))
+            .map(r => r.substring(0, 4))
+            .join('-')
 
-      skClient.mainRoom = newRoom
-      skClient.aliasRoom = skClient.myName
+          // si no existe el cuarto
+          if (!Object.keys(skClient.rooms).some(r => r === newRoom)) {
+            nsp.connected[idPartner].join(newRoom)
+            skClient.join(newRoom)
+          }
+
+          roomToChange = newRoom
+          skClient.aliasRoom = skClient.myNick
+        }
+        skClient.mainRoom = roomToChange
+      })
     })
   }
 }
