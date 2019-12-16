@@ -22,10 +22,8 @@ export default {
   },
   methods: {
     send () {
-      if (this.text.length <= 1) {
-        return
-      }
-      console.log(this.user)
+      if (this.text.length <= 1) { return }
+
       this.$emit('newNessage', {
         user: this.user,
         text: this.text
