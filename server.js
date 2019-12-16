@@ -1,35 +1,25 @@
-'use strict'
-
-const io = require('socket.io')
 
 const express = require('express')
 const app = express()
-const port = 5000
 
+// middlewares tipicos
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const history = require('connect-history-api-fallback')
-
-const { resolve } = require('path')
-
 app.use(bodyParser.json({ limit: '1mb' }))
 app.use(cors())
 
-// Middleware for serving '/dist' directory
-
+// para cargar el build de vue
+const { resolve } = require('path')
 const publicPath = resolve(__dirname, './client/dist/')
 const staticConf = { maxAge: '1y', etag: false }
-
 const staticFileMiddleware = express.static(publicPath, staticConf)
-
-// 1st call for unredirected requests
 app.use(staticFileMiddleware)
-
-// Support history api
+const history = require('connect-history-api-fallback')
 app.use('/', history({
   index: resolve(__dirname, './client/dist/index.html')
 }))
 
+//
 app.use(function errorHandler (err, req, res, next) {
   console.error('este es de la aplicacion Express', err)
   res.status(err.statusCode || 400).json({
@@ -38,7 +28,7 @@ app.use(function errorHandler (err, req, res, next) {
 })
 
 // si no encuentra la url 404
-app.use(function (req, res) {
+app.use(function noFoundHandler (req, res) {
   res.status(404)
   const msn = 'Not found'
 
@@ -49,8 +39,9 @@ app.use(function (req, res) {
   res.send(msn)
 })
 
+// corriendo el server como tal
+const port = 5000
 app.set('port', port)
-
 const server = require('http').createServer(app).listen(port)
 
 /* mini-logger */
@@ -69,6 +60,7 @@ server
   })
 
 /* sockets */
+const io = require('socket.io')
 const serverIo = io.listen(server, { origins: '*:*' })
 require('./sockets')(serverIo)
 
