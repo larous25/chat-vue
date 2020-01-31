@@ -8,7 +8,7 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-const connection = socketio('http://localhost:5000/chat', {
+const connection = socketio(`${window.location.hostname}:5000/chat`, {
   query: {
     auth: 'dejame pasar porfa'
   }
