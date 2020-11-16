@@ -16,7 +16,6 @@ const routes = [
     component: () => import('../views/Chat.vue'),
     beforeEnter (to, from, next) {
       if (!to.params.user || to.params.user.length < 5) { return next('/') }
-
       next()
     }
   }

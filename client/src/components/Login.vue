@@ -24,17 +24,17 @@ export default {
   },
   methods: {
     submit () {
-      if (this.user.length > 5) {
+      if (/(?=.{5})(?=.*[a-z])(?=.*[A-Z])/.test(this.user)) {
         this.$emit('sendUserName', this.user)
         return
       }
 
-      this.error = 'El usuario debe tener minimo 5 caracteres'
+      this.error = 'Deben ser por lo menos cinco letras y solo se permite minusculas y mayusculas (por lo menos una de cada una)'
     }
   },
   computed: {
     validText () {
-      return this.user.length > 5
+      return /(?=.{5})(?=.*[a-z])(?=.*[A-Z])/.test(this.user)
     }
   }
 }
